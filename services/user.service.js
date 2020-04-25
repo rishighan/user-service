@@ -1,93 +1,46 @@
 "use strict";
 
-/**
- * @typedef {import('moleculer').Context} Context Moleculer's Context
- */
+const DBService = require("../mixins/db.mixin");
+const User = require("../models/user.model");
+const passport = require("passport");
 
 module.exports = {
-	name: "greeter",
-
-	/**
-	 * Settings
-	 */
-	settings: {
-
-	},
-
-	/**
-	 * Dependencies
-	 */
+	name: "user",
+	mixins: [DBService("userschemas", User)],
+	settings: {},
 	dependencies: [],
-
-	/**
-	 * Actions
-	 */
 	actions: {
-
-		/**
-		 * Say a 'Hello' action.
-		 *
-		 * @returns
-		 */
-		hello: {
-			rest: {
-				method: "GET",
-				path: "/hello"
+		register: {
+			params: { username: "string" },
+			handler(broker) {
+				User.register(
+					new User({ username: broker.params.username }),
+					broker.params.password,
+					(err, account) => {
+						if (err) {
+							return { error: new Error(err, account) };
+						}
+						passport.authenticate("local")(null, null, () => {
+							return { status: "User successfully registered." };
+						});
+					}
+				);
 			},
-			async handler() {
-				return "Hello Moleculer";
-			}
 		},
-
-		/**
-		 * Welcome, a username
-		 *
-		 * @param {String} name - User name
-		 */
 		welcome: {
 			rest: "/welcome",
 			params: {
-				name: "string"
+				name: "string",
 			},
 			/** @param {Context} ctx  */
 			async handler(ctx) {
 				return `Welcome, ${ctx.params.name}`;
-			}
-		}
+			},
+		},
 	},
-
-	/**
-	 * Events
-	 */
-	events: {
-
-	},
-
-	/**
-	 * Methods
-	 */
-	methods: {
-
-	},
-
-	/**
-	 * Service created lifecycle event handler
-	 */
-	created() {
-
-	},
-
-	/**
-	 * Service started lifecycle event handler
-	 */
-	async started() {
-
-	},
-
-	/**
-	 * Service stopped lifecycle event handler
-	 */
-	async stopped() {
-
-	}
+	events: {},
+	methods: {},
+	created() {},
+	async started() {},
+	async stopped() {},
 };
