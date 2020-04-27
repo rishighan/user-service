@@ -27,14 +27,11 @@ module.exports = {
 				);
 			},
 		},
-		welcome: {
-			rest: "/welcome",
-			params: {
-				name: "string",
-			},
-			/** @param {Context} ctx  */
-			async handler(ctx) {
-				return `Welcome, ${ctx.params.name}`;
+		login: {
+			handler(ctx) {
+				passport.authenticate("local", (error, user, info) => {
+					console.log(error, user);
+				}); 
 			},
 		},
 	},
