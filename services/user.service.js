@@ -29,11 +29,18 @@ module.exports = {
 		},
 		login: {
 			handler(ctx) {
+				console.log(ctx.meta)
 				passport.authenticate("local", (error, user, info) => {
-					console.log(error, user);
-				}); 
+					console.log("here");
+				});
+				
 			},
 		},
+		jagan: {
+			handler(ctx) {
+				return "goo";	
+			}
+		}
 	},
 	events: {},
 	methods: {},

@@ -1,11 +1,11 @@
 "use strict";
 
 const passport = require("passport");
-const localStrategy = require("passport-local").Strategy;
 const ApiGateway = require("moleculer-web");
 const User = require("../models/user.model");
+const express = require("express");
 
-passport.use(new localStrategy(User.authenticate()));
+passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
@@ -15,58 +15,73 @@ module.exports = {
 	settings: {
 		port: process.env.PORT || 3456,
 		ip: "0.0.0.0",
-		use: [passport.initialize(), passport.session()],
+		use: [
+			passport.initialize(),
+			passport.session(),
+		],
 		routes: [
 			{
-				path: "/api",
-				whitelist: [
-					"**"
-				],
-				use: [],
+				path: "/users",
+				whitelist: ["**"],
+				use: [passport.authenticate("local")],
 				mergeParams: true,
 				authentication: false,
 				authorization: false,
 				autoAliases: true,
 
 				aliases: {
-
+					"POST health": "$node.health",
+					"POST login": "user.login",
 				},
+
 				callingOptions: {},
 				bodyParsers: {
 					json: {
 						strict: false,
-						limit: "1MB"
+						limit: "1MB",
 					},
 					urlencoded: {
 						extended: true,
-						limit: "1MB"
-					}
+						limit: "1MB",
+					},
 				},
 
 				// Mapping policy setting. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Mapping-policy
 				mappingPolicy: "all", // Available values: "all", "restrict"
 
 				// Enable/disable logging
-				logging: true
-			}
+				logging: true,
+			},
 		],
 
-		// Do not log client side errors (does not log an error response when the error.code is 400<=X<500)
 		log4XXResponses: false,
-		// Logging the request parameters. Set to any log level to enable it. E.g. "info"
 		logRequestParams: null,
-		// Logging the response data. Set to any log level to enable it. E.g. "info"
 		logResponseData: null,
-
-
-		// Serve assets from "public" folder. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Serve-static-files
-		assets: {
-			folder: "public",
-			// Options to `server-static` module
-			options: {}
-		}
 	},
 
-	methods: {
-	}
+	methods: {},
+	created() {
+		const app = express();
+		app.use(this.express());
+		this.app = app;
+	},
+
+	started() {
+		this.app.listen(Number(this.settings.port), (err) => {
+			if (err) return this.broker.fatal(err);
+			this.logger.info(
+				`WWW server started on port ${this.settings.port}`
+			);
+		});
+	},
+
+	stopped() {
+		if (this.app.listening) {
+			this.app.close((err) => {
+				if (err)
+					return this.logger.error("WWW server close error!", err);
+				this.logger.info("WWW server stopped!");
+			});
+		}
+	},
 };

@@ -38,19 +38,6 @@ services:
       - nats
     networks:
       - gateway 
-  
-  # mongo:
-  #   image: mongo
-  #   container_name: db
-  #   restart: always
-  #   ports:
-  #     - "27017:27017"
-  #   volumes:
-  #     - /usr/local/var/mongodb/:/data/db
-  #   labels:
-  #     - traefik.enable=false
-  #   networks:
-  #     - gateway
 
 networks:
   gateway:
