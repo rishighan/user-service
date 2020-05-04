@@ -27,20 +27,12 @@ module.exports = {
 				);
 			},
 		},
-		login: {
-			handler(ctx) {
-				console.log(ctx.meta)
-				passport.authenticate("local", (error, user, info) => {
-					console.log("here");
-				});
+		// login: {
+		// 	handler(ctx) {
+		// 		console.log(ctx.options.parentCtx.params.req);
 				
-			},
-		},
-		jagan: {
-			handler(ctx) {
-				return "goo";	
-			}
-		}
+		// 	},
+		// },
 	},
 	events: {},
 	methods: {},

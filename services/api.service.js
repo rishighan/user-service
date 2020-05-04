@@ -4,6 +4,7 @@ const passport = require("passport");
 const ApiGateway = require("moleculer-web");
 const User = require("../models/user.model");
 const express = require("express");
+const router = express.Router();
 
 passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
@@ -15,13 +16,10 @@ module.exports = {
 	settings: {
 		port: process.env.PORT || 3456,
 		ip: "0.0.0.0",
-		use: [
-			passport.initialize(),
-			passport.session(),
-		],
+		use: [passport.initialize(), passport.session()],
 		routes: [
 			{
-				path: "/users",
+				// path: "/users",
 				whitelist: ["**"],
 				use: [passport.authenticate("local")],
 				mergeParams: true,
@@ -31,7 +29,20 @@ module.exports = {
 
 				aliases: {
 					"POST health": "$node.health",
-					"POST login": "user.login",
+					"POST login"(req, res, next) {
+						passport.authenticate("local", (error, user, info) => {
+							req.logIn(user, error, () => {
+								if (error) {
+									return {
+										err: "Could not log in user",
+									};
+								}
+								return {
+									status: "Login successful!",
+								};
+							});
+						})(req, res, next);
+					},
 				},
 
 				callingOptions: {},
@@ -62,7 +73,7 @@ module.exports = {
 	methods: {},
 	created() {
 		const app = express();
-		app.use(this.express());
+		app.use("/api", this.express());
 		this.app = app;
 	},
 
