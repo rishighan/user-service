@@ -130,3 +130,4 @@ dist
 # JetBrains IDE
 .idea
 >>>>>>> First commit
+/.vscode/settings.json

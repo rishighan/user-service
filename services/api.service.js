@@ -3,8 +3,6 @@
 const passport = require("passport");
 const ApiGateway = require("moleculer-web");
 const User = require("../models/user.model");
-const express = require("express");
-const router = express.Router();
 
 passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
@@ -19,9 +17,8 @@ module.exports = {
 		use: [passport.initialize(), passport.session()],
 		routes: [
 			{
-				// path: "/users",
+				path: "/users",
 				whitelist: ["**"],
-				use: [passport.authenticate("local")],
 				mergeParams: true,
 				authentication: false,
 				authorization: false,
@@ -29,20 +26,7 @@ module.exports = {
 
 				aliases: {
 					"POST health": "$node.health",
-					"POST login"(req, res, next) {
-						passport.authenticate("local", (error, user, info) => {
-							req.logIn(user, error, () => {
-								if (error) {
-									return {
-										err: "Could not log in user",
-									};
-								}
-								return {
-									status: "Login successful!",
-								};
-							});
-						})(req, res, next);
-					},
+					"POST login": "user.login"
 				},
 
 				callingOptions: {},
@@ -70,29 +54,15 @@ module.exports = {
 		logResponseData: null,
 	},
 
-	methods: {},
+	methods: {
+	},
+	
 	created() {
-		const app = express();
-		app.use("/api", this.express());
-		this.app = app;
 	},
 
 	started() {
-		this.app.listen(Number(this.settings.port), (err) => {
-			if (err) return this.broker.fatal(err);
-			this.logger.info(
-				`WWW server started on port ${this.settings.port}`
-			);
-		});
 	},
 
 	stopped() {
-		if (this.app.listening) {
-			this.app.close((err) => {
-				if (err)
-					return this.logger.error("WWW server close error!", err);
-				this.logger.info("WWW server stopped!");
-			});
-		}
 	},
 };
