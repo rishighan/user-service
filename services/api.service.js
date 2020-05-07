@@ -14,20 +14,19 @@ module.exports = {
 	settings: {
 		port: process.env.PORT || 3456,
 		ip: "0.0.0.0",
-		use: [passport.initialize(), passport.session()],
+		use: [
+			passport.initialize(),
+			passport.session(),
+			// passport.authenticate("local", { session: true }),
+		],
 		routes: [
 			{
-				path: "/users",
+				// path: "/api",
 				whitelist: ["**"],
 				mergeParams: true,
 				authentication: false,
 				authorization: false,
-				autoAliases: true,
-
-				aliases: {
-					"POST health": "$node.health",
-					"POST login": "user.login"
-				},
+				autoAliases: false,
 
 				callingOptions: {},
 				bodyParsers: {
@@ -46,23 +45,28 @@ module.exports = {
 
 				// Enable/disable logging
 				logging: true,
+				aliases: {
+					"POST /user/health": "$node.health",
+					"POST /user/register": "user.register",	
+					"POST login": "user.login",
+					"GET /user/status": "user.status",
+					"GET logout": "user.logout",
+				},
 			},
+			
 		],
+		
 
 		log4XXResponses: false,
 		logRequestParams: null,
 		logResponseData: null,
 	},
 
-	methods: {
-	},
-	
-	created() {
-	},
+	methods: {},
 
-	started() {
-	},
+	created() {},
 
-	stopped() {
-	},
+	started() {},
+
+	stopped() {},
 };
