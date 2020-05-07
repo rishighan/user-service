@@ -1,12 +1,6 @@
 "use strict";
 
-const passport = require("passport");
 const ApiGateway = require("moleculer-web");
-const User = require("../models/user.model");
-
-passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
 
 module.exports = {
 	name: "api",
@@ -15,9 +9,6 @@ module.exports = {
 		port: process.env.PORT || 3456,
 		ip: "0.0.0.0",
 		use: [
-			passport.initialize(),
-			passport.session(),
-			// passport.authenticate("local", { session: true }),
 		],
 		routes: [
 			{

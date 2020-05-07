@@ -2,12 +2,12 @@
 const { MoleculerClientError } = require("moleculer").Errors;
 const DBService = require("../mixins/db.mixin");
 const User = require("../models/user.model");
-const passport = require("passport");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
 	name: "user",
-	mixins: [DBService("userschemas", User)],
+	mixins: [DBService("users", User)],
 	settings: {
 		JWT_SECRET: process.env.JWT_SECRET || "jwt-conduit-secret",
 		fields: ["_id", "username", "email"],
@@ -75,7 +75,38 @@ module.exports = {
 		},
 	},
 	events: {},
-	methods: {},
+	methods: {
+		/**
+		 * Generate a JWT token from user entity
+		 *
+		 * @param {Object} user
+		 */
+		generateJWT(user) {
+			const today = new Date();
+			const exp = new Date(today);
+			exp.setDate(today.getDate() + 60);
+
+			return jwt.sign({
+				id: user._id,
+				username: user.username,
+				exp: Math.floor(exp.getTime() / 1000)
+			}, this.settings.JWT_SECRET);
+		},
+
+		/**
+		 * Transform returned user entity. Generate JWT token if neccessary.
+		 *
+		 * @param {Object} user
+		 * @param {Boolean} withToken
+		 */
+		transformEntity(user, withToken, token) {
+			if (user) {
+				if (withToken)
+					user.token = token || this.generateJWT(user);
+			}
+			return { user };
+		},
+	},
 	created() {},
 	async started() {},
 	async stopped() {},
