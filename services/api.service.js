@@ -12,7 +12,7 @@ module.exports = {
 		],
 		routes: [
 			{
-				// path: "/api",
+				path: "/api",
 				whitelist: ["**"],
 				mergeParams: true,
 				authentication: false,
@@ -36,16 +36,17 @@ module.exports = {
 
 				// Enable/disable logging
 				logging: true,
-				aliases: {
-					"POST /user/health": "$node.health",
-					"POST /user/register": "user.register",	
-					"POST login": "user.login",
-					"GET /user/status": "user.status",
-					"GET logout": "user.logout",
-				},
+				
 			},
-			
 		],
+		aliases: {
+			"POST /user/health": "$node.health",
+			"POST /user/register": "user.register",	
+			"POST login": "user.login",
+			"GET /user/me": "user.me",
+			"PUT /user/update": "user.updateMyself",
+			"GET logout": "user.logout",
+		},
 		
 
 		log4XXResponses: false,
