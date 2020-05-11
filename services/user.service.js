@@ -87,7 +87,6 @@ module.exports = {
 			},
 			async handler(ctx) {
 				const { email, password } = ctx.params.user;
-
 				const user = await this.adapter.findOne({ email });
 				if (!user)
 					throw new MoleculerClientError(

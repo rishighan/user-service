@@ -40,7 +40,7 @@ module.exports = {
 			},
 		],
 		aliases: {
-			"POST /user/health": "$node.health",
+			"POST health": "$node.health",
 			"POST /user/register": "user.register",	
 			"POST login": "user.login",
 			"GET /user/me": "user.me",
