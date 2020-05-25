@@ -18,7 +18,7 @@ services:
       - traefik.enable=true
       - traefik.docker.network=gateway
       - traefik.http.routers.user-api.service=user-api@docker
-      - traefik.http.routers.posts-api.rule=Host(`services.rishighan.com`) && PathPrefix(`/api/user/`)
+      - traefik.http.routers.user-api.rule=Host(`services.rishighan.com`) && PathPrefix(`/api/user/`)
       # - traefik.http.routers.user-api.rule=Host(`localhost`) && PathPrefix(`/api/user/`)
     networks:
       - gateway 
