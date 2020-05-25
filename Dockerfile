@@ -6,7 +6,7 @@ RUN mkdir /posts-service
 WORKDIR /posts-service
 
 RUN apk update && apk upgrade && \
-    apk add --no-cache bash python3 git openssh
+    apk add --no-cache bash python3 build-essential git openssh
 
 COPY package.json package-lock.json ./
 RUN  npm install
