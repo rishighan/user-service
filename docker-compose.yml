@@ -13,15 +13,9 @@ services:
     external_links:
       - mongo
       - nats
-    labels:
-      - traefik.http.services.user-api.loadbalancer.server.port=3456
-      - traefik.enable=true
-      - traefik.docker.network=gateway
-      - traefik.http.routers.user-api.service=user-api@docker
-      - traefik.http.routers.user-api.rule=Host(`services.rishighan.com`) && PathPrefix(`/api/user/`)
-      # - traefik.http.routers.user-api.rule=Host(`localhost`) && PathPrefix(`/api/user/`)
+      - caddy
     networks:
-      - gateway 
+      - main-network 
 
   user:
     build:
@@ -30,15 +24,14 @@ services:
     container_name: user-service
     env_file: docker-compose.env
     environment:
-      SERVICES: user 
-    labels:
-      - traefik.enable=false
+      SERVICES: user
     external_links:
       - mongo
       - nats
+      - caddy
     networks:
-      - gateway 
+      - main-network 
 
 networks:
-  gateway:
+  main-network:
     external: true
